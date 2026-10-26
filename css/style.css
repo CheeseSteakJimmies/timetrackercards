@@ -1,0 +1,461 @@
+/* ===== Colours =====
+   Everything is derived from Nextcloud's own theme variables. Text and graphics
+   keep a soft, comfortable contrast in light and dark themes, whatever accent
+   colour the user has chosen:
+   - the app background and the cards are faint tints of the accent colour
+   - text is the theme's text colour with a hint of the accent
+   - graphics use the accent pulled toward the text colour, so they are never
+     washed out on a light theme or glaring on a dark one
+   - warning and danger use Nextcloud's own contrast-checked colours */
+.ttc-app,
+.ttc-widget {
+	--ttc-accent: var(--color-primary-element, #0082c9);
+	--ttc-bg: var(--color-primary-element-light, rgba(0, 130, 201, .08));
+	--ttc-card: var(--color-primary-element-light, rgba(0, 130, 201, .14));
+	--ttc-border: var(--color-border, rgba(128, 128, 128, .3));
+	--ttc-text: var(--color-main-text);
+	--ttc-muted: var(--color-text-maxcontrast);
+	--ttc-ok: var(--color-primary-element, #0082c9);
+	--ttc-warn: var(--color-warning-text, var(--color-warning, #a37200));
+	--ttc-danger: var(--color-error-text, var(--color-error, #c70000));
+	--ttc-track: rgba(128, 128, 128, .25);
+	--ttc-chip: rgba(128, 128, 128, .18);
+}
+.ttc-app {
+	background-color: var(--color-main-background);
+	background-image: linear-gradient(var(--ttc-bg), var(--ttc-bg));
+}
+@supports (color: color-mix(in oklab, red 50%, blue)) {
+	.ttc-app,
+	.ttc-widget {
+		--ttc-bg: color-mix(in srgb, var(--ttc-accent) 9%, transparent);
+		--ttc-card: color-mix(in srgb, var(--ttc-accent) 14%, transparent);
+		--ttc-border: color-mix(in srgb, var(--ttc-accent) 30%, transparent);
+		--ttc-text: color-mix(in oklab, var(--color-main-text) 94%, var(--ttc-accent));
+		--ttc-muted: color-mix(in oklab, var(--color-main-text) 70%, var(--color-main-background));
+		--ttc-ok: color-mix(in oklab, var(--color-main-text) 36%, var(--ttc-accent));
+		--ttc-track: color-mix(in oklab, var(--color-main-text) 14%, transparent);
+		--ttc-chip: color-mix(in oklab, var(--color-main-text) 10%, transparent);
+	}
+}
+
+#timetrackercards {
+	width: 100%;
+	box-sizing: border-box;
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 24px 20px 56px;
+	color: var(--ttc-text);
+}
+
+.ttc-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+.ttc-header h2 { margin: 0; }
+
+/* ===== Board: three cards per row, every row centred, all cards the same size ===== */
+.ttc-grid {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: stretch;
+	gap: 16px;
+	container-type: inline-size;
+}
+.ttc-grid > .ttc-card {
+	flex: 0 0 calc((100% - 32px) / 3);
+	min-width: 0;
+}
+@container (max-width: 999px) { .ttc-grid > .ttc-card { flex-basis: calc((100% - 16px) / 2); } }
+@container (max-width: 639px) { .ttc-grid > .ttc-card { flex-basis: 100%; } }
+/* Narrow cards need one more line to fit 150 characters. */
+@container (max-width: 419px) { .ttc-desc { height: 7em; } }
+
+.ttc-empty {
+	text-align: center;
+	padding: 48px 16px;
+	color: var(--ttc-muted);
+}
+.ttc-empty-title { font-size: 1.3em; font-weight: 600; color: var(--ttc-text); }
+
+/* ===== Card: every part has a fixed height, so all cards are identical ===== */
+.ttc-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: 12px 16px 16px;
+	text-align: center;
+	color: var(--ttc-text);
+	background: var(--ttc-card);
+	border: 1px solid var(--ttc-border);
+	border-radius: var(--border-radius-large, 12px);
+	box-shadow: 0 2px 8px var(--color-box-shadow, rgba(0, 0, 0, .12));
+}
+.ttc-card > * { flex: none; }
+.ttc-card.ttc-menu-open { z-index: 5; }
+.ttc-card.ttc-dragging { opacity: .45; }
+
+.ttc-card-head {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	height: 36px;
+}
+.ttc-name {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	font-size: 1.1em;
+	font-weight: 600;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.ttc-icon-btn {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	min-height: 0;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--ttc-text);
+}
+.ttc-icon-btn svg { fill: currentColor; }
+.ttc-icon-btn:hover { background: var(--color-background-hover); }
+.ttc-grip { cursor: grab; touch-action: none; }
+.ttc-card[draggable="true"] .ttc-grip { cursor: grabbing; }
+
+/* The note under the title: always room for 150 characters, never more. */
+.ttc-desc {
+	box-sizing: border-box;
+	height: 5.6em; /* four lines */
+	margin: 4px 4px 6px;
+	padding: 0 2px;
+	overflow-y: auto;
+	font-size: .9em;
+	line-height: 1.4;
+	color: var(--ttc-muted);
+	white-space: pre-line;
+	overflow-wrap: anywhere;
+	scrollbar-width: thin;
+}
+
+/* ===== Card menu ===== */
+.ttc-menu-wrap { position: relative; flex: none; }
+.ttc-menu {
+	position: absolute;
+	inset-inline-end: 0;
+	top: 100%;
+	z-index: 10;
+	min-width: 190px;
+	padding: 4px;
+	text-align: start;
+	background: var(--color-main-background);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-large, 12px);
+	box-shadow: 0 4px 16px var(--color-box-shadow, rgba(0, 0, 0, .25));
+}
+.ttc-menu[hidden] { display: none; }
+.ttc-menu button {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 8px 12px;
+	text-align: start;
+	border: none;
+	border-radius: var(--border-radius, 8px);
+	background: transparent;
+	color: var(--color-main-text);
+}
+.ttc-menu button:hover:not(:disabled) { background: var(--color-background-hover); }
+.ttc-menu button:disabled { opacity: .4; cursor: default; }
+.ttc-menu .ttc-danger { color: var(--ttc-danger); }
+
+/* ===== Progress ring ===== */
+.ttc-ring {
+	position: relative;
+	width: min(200px, 70%);
+	aspect-ratio: 1;
+	margin: 6px auto 8px;
+	container-type: inline-size;
+}
+.ttc-svg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+.ttc-track {
+	fill: none;
+	stroke: var(--ttc-track);
+	stroke-width: 12;
+}
+/* The arc is the time that is left. It is "eaten" clockwise from the top. */
+.ttc-arc {
+	fill: none;
+	stroke: var(--ttc-ok);
+	stroke-width: 12;
+	stroke-linecap: round;
+	stroke-dasharray: 100 100;
+	stroke-dashoffset: 0;
+}
+/* Ease only between states; while running the ring is driven frame by frame. */
+.ttc-card:not([data-status="running"]) .ttc-arc {
+	transition: stroke-dashoffset .6s ease, stroke .6s ease;
+}
+.ttc-card[data-status="paused"] .ttc-arc { opacity: .5; }
+
+.ttc-head { display: none; }
+.ttc-card[data-status="running"] .ttc-head,
+.ttc-card[data-status="paused"] .ttc-head { display: block; }
+.ttc-head circle {
+	fill: var(--color-main-background);
+	stroke: var(--ttc-color, var(--ttc-ok));
+	stroke-width: 3.5;
+}
+
+/* A short comet tail behind the pointer. */
+.ttc-tail { display: none; }
+.ttc-card[data-status="running"] .ttc-tail { display: inline; }
+.ttc-tail path {
+	fill: none;
+	stroke: var(--ttc-color, var(--ttc-ok));
+	stroke-linecap: butt;
+}
+
+.ttc-center {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.ttc-clock {
+	font-size: 36px;
+	font-size: clamp(22px, 21cqw, 52px);
+	font-weight: 700;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+.ttc-clock.ttc-long { font-size: 28px; font-size: clamp(18px, 15cqw, 38px); }
+.ttc-card[data-status="paused"] .ttc-clock { color: var(--ttc-muted); }
+.ttc-card[data-status="finished"] .ttc-clock { color: var(--ttc-danger); }
+
+/* A soft ring that expands and fades out when the time is up.
+   Only transform and opacity are animated, so it stays smooth. */
+.ttc-pulse {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	border: 3px solid var(--ttc-danger);
+	opacity: 0;
+	pointer-events: none;
+	will-change: transform, opacity;
+}
+.ttc-card[data-status="finished"] .ttc-pulse {
+	animation: ttc-pulse 2s cubic-bezier(.2, .6, .3, 1) infinite;
+}
+@keyframes ttc-pulse {
+	from { transform: scale(1); opacity: .55; }
+	to { transform: scale(1.18); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.ttc-card[data-status="finished"] .ttc-pulse { animation: none; }
+	.ttc-card:not([data-status="running"]) .ttc-arc { transition: none; }
+}
+
+/* ===== Show elements only for the states listed in data-show ===== */
+.ttc-card [data-show] { display: none; }
+.ttc-card[data-status="idle"] [data-show~="idle"],
+.ttc-card[data-status="running"] [data-show~="running"],
+.ttc-card[data-status="paused"] [data-show~="paused"],
+.ttc-card[data-status="finished"] [data-show~="finished"] { display: revert; }
+
+.ttc-card[data-resettable="true"] [data-daily-only],
+.ttc-card[data-resettable="false"] [data-needs-reset],
+.ttc-card[data-owner="false"] [data-owner-only],
+.ttc-card[data-owner="true"] [data-member-only] { display: none !important; }
+
+.ttc-status {
+	height: 1.6em;
+	margin: 0;
+	line-height: 1.6em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--ttc-muted);
+}
+
+.ttc-buttons {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	height: 44px;
+	margin: 8px 0 4px;
+}
+.ttc-buttons button { flex: 0 1 120px; min-width: 0; margin: 0; }
+
+.ttc-foot {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	height: 32px;
+	margin-top: 8px;
+	overflow: hidden;
+}
+.ttc-chip {
+	padding: 2px 10px;
+	font-size: .8em;
+	white-space: nowrap;
+	border-radius: 999px;
+	background: var(--ttc-chip);
+	color: var(--ttc-muted);
+}
+.ttc-avatars { display: flex; justify-content: center; }
+
+.ttc-avatar {
+	position: relative;
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+	width: 28px;
+	height: 28px;
+	margin-inline-start: -8px;
+	overflow: hidden;
+	border: 2px solid var(--color-main-background);
+	border-radius: 50%;
+	background: var(--color-primary-element);
+	color: var(--color-primary-element-text, #fff);
+	font-size: 12px;
+	font-weight: 600;
+}
+.ttc-avatar:first-child { margin-inline-start: 0; }
+.ttc-avatar img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.ttc-more {
+	display: inline-grid;
+	place-items: center;
+	margin-inline-start: 4px;
+	font-size: 12px;
+	color: var(--ttc-muted);
+}
+
+.ttc-error { color: var(--ttc-danger); margin: 0 0 12px; }
+
+/* ===== Dialogs: hidden until opened, then centred in the window ===== */
+.ttc-dialog {
+	width: min(480px, 92vw);
+	padding: 0;
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-large, 12px);
+	background: var(--color-main-background);
+	color: var(--color-main-text);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, .35);
+}
+.ttc-dialog:not([open]) { display: none !important; }
+.ttc-dialog[open] {
+	position: fixed;
+	inset: 0;
+	margin: auto;
+	height: fit-content;
+	max-height: calc(100vh - 32px);
+	overflow-y: auto;
+}
+.ttc-dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.ttc-dialog-body { padding: 24px; }
+.ttc-dialog h3 { margin: 0 0 16px; }
+.ttc-dialog h4 { margin: 16px 0 8px; }
+.ttc-dialog label { display: block; margin: 14px 0 4px; font-weight: 600; }
+.ttc-dialog input[type="text"],
+.ttc-dialog input[type="number"],
+.ttc-dialog input[type="search"] { width: 100%; box-sizing: border-box; }
+.ttc-dialog textarea { width: 100%; min-height: 72px; box-sizing: border-box; resize: vertical; }
+.ttc-hint { margin: 4px 0 0; font-size: .9em; color: var(--ttc-muted); }
+.ttc-count { text-align: end; }
+.ttc-dialog-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 22px;
+}
+
+/* On/off switch */
+.ttc-dialog label.ttc-switch {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 18px 0 0;
+	font-weight: 400;
+	cursor: pointer;
+}
+.ttc-switch input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+.ttc-switch-track {
+	position: relative;
+	flex: none;
+	width: 44px;
+	height: 24px;
+	border-radius: 12px;
+	background: var(--color-background-darker, #bbb);
+	transition: background .2s;
+}
+.ttc-switch-track::after {
+	content: "";
+	position: absolute;
+	top: 3px;
+	inset-inline-start: 3px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+	transition: transform .2s;
+}
+.ttc-switch input:checked + .ttc-switch-track { background: var(--color-primary-element); }
+.ttc-switch input:checked + .ttc-switch-track::after { transform: translateX(20px); }
+.ttc-switch input:checked + .ttc-switch-track:dir(rtl)::after { transform: translateX(-20px); }
+.ttc-switch input:focus-visible + .ttc-switch-track { outline: 2px solid var(--color-main-text); outline-offset: 2px; }
+
+/* People lists (members and search results) */
+.ttc-people { list-style: none; margin: 8px 0 0; padding: 0; }
+.ttc-person {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 0;
+}
+.ttc-person .ttc-avatar { margin-inline-start: 0; width: 32px; height: 32px; }
+.ttc-person-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ttc-badge {
+	padding: 1px 8px;
+	font-size: .8em;
+	border-radius: 999px;
+	background: var(--ttc-chip);
+	color: var(--ttc-muted);
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>timetrackercards</id>
+	<name>Time Tracker Cards</name>
+	<summary>Countdown timers on shareable cards: screen time, cooking, game sessions and more</summary>
+	<summary lang="sv">Nedräkningstimrar på delbara kort: matlagning, speltid, skärmtid och mer</summary>
+	<description><![CDATA[Create as many countdown timers as you like and arrange them as cards on your own board. Give each timer a name, an optional note and a length, and invite other users of your Nextcloud: everybody with access sees the same time left, and anyone can start or pause the timer. When the time is up, everybody gets a Nextcloud notification (web, desktop and mobile apps).
+
+A timer is either resettable (an oven timer, a game session) or a daily allowance that cannot be reset by hand and starts over with the full time every day (for example a child's screen time). The cards follow your Nextcloud accent colour, and the app is available in many languages.
+
+This app was developed with the help of AI; see the README for details.]]></description>
+	<version>0.1.4</version>
+	<licence>AGPL-3.0-or-later</licence>
+	<author homepage="https://github.com/Nextclouder">Nextclouder</author>
+	<namespace>TimeTrackerCards</namespace>
+	<category>tools</category>
+	<website>https://github.com/Nextclouder/timetrackercards</website>
+	<bugs>https://github.com/Nextclouder/timetrackercards/issues</bugs>
+	<repository type="git">https://github.com/Nextclouder/timetrackercards.git</repository>
+	<dependencies>
+		<nextcloud min-version="32" max-version="35"/>
+	</dependencies>
+	<background-jobs>
+		<job>OCA\TimeTrackerCards\Cron\CheckTimerJob</job>
+	</background-jobs>
+	<navigations>
+		<navigation>
+			<id>timetrackercards</id>
+			<name>Time Tracker Cards</name>
+			<route>timetrackercards.page.index</route>
+			<icon>app.svg</icon>
+			<order>10</order>
+		</navigation>
+	</navigations>
+</info>

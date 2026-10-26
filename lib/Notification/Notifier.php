@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+namespace OCA\TimeTrackerCards\Notification;
+
+use OCA\TimeTrackerCards\AppInfo\Application;
+use OCP\IURLGenerator;
+use OCP\L10N\IFactory;
+use OCP\Notification\INotification;
+use OCP\Notification\INotifier;
+use OCP\Notification\UnknownNotificationException;
+
+class Notifier implements INotifier {
+	public function __construct(
+		private IFactory $factory,
+		private IURLGenerator $urlGenerator,
+	) {
+	}
+
+	public function getID(): string {
+		return Application::APP_ID;
+	}
+
+	public function getName(): string {
+		return 'Time Tracker Cards';
+	}
+
+	public function prepare(INotification $notification, string $languageCode): INotification {
+		if ($notification->getApp() !== Application::APP_ID || $notification->getSubject() !== 'finished') {
+			throw new UnknownNotificationException();
+		}
+
+		$l = $this->factory->get(Application::APP_ID, $languageCode);
+		$params = $notification->getSubjectParameters();
+		$name = (string)($params['name'] ?? '');
+		$minutes = (int)($params['minutes'] ?? 0);
+
+		$notification->setParsedSubject($name !== '' ? $l->t('%s: time is up', [$name]) : $l->t('Time is up'))
+			->setParsedMessage($l->n(
+				'The timer of %n minute has finished.',
+				'The timer of %n minutes has finished.',
+				$minutes
+			))
+			->setIcon($this->urlGenerator->getAbsoluteURL(
+				$this->urlGenerator->imagePath(Application::APP_ID, 'app.svg')
+			))
+			->setLink($this->urlGenerator->linkToRouteAbsolute('timetrackercards.page.index'));
+
+		return $notification;
+	}
+}

@@ -1,0 +1,42 @@
+/* Compact timer list for the Nextcloud dashboard. The colours come from the
+   shared variables in style.css, so the widget follows the theme as well. */
+.ttc-widget {
+	padding: 0 8px 8px;
+	color: var(--ttc-text);
+}
+.ttc-wlist { list-style: none; margin: 0; padding: 0; }
+.ttc-wrow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 4px;
+}
+.ttc-wrow + .ttc-wrow { border-top: 1px solid var(--color-border); }
+.ttc-widget .ttc-ring {
+	flex: none;
+	width: 44px;
+	margin: 0;
+}
+.ttc-wrow[data-status="paused"] .ttc-arc { opacity: .5; }
+.ttc-wtext {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+.ttc-wname {
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.ttc-wtime {
+	font-variant-numeric: tabular-nums;
+	color: var(--ttc-muted);
+}
+.ttc-wrow[data-status="finished"] .ttc-wtime { color: var(--ttc-danger); }
+.ttc-wbtn { flex: none; min-width: 84px; margin: 0; }
+.ttc-wbtn[hidden] { display: none; }
+.ttc-wempty { margin: 0; padding: 16px 8px; text-align: center; color: var(--ttc-muted); }
+.ttc-werror { margin: 0; padding: 8px; text-align: center; color: var(--ttc-danger); }
+.ttc-wmore { display: block; padding: 10px 8px 4px; text-align: center; }
